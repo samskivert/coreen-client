@@ -2,8 +2,7 @@
 # Getdown control file for Coreen client
 
 # version = currently using timestamp versioning
-# appbase = http://github.com/samskivert/coreen-client/raw/master/
-appbase = file:///home/mdb/projects/coreen/client
+appbase = http://github.com/samskivert/coreen-client/raw/master/
 
 # Configure the update UI
 ui.name = Coreen
@@ -31,6 +30,9 @@ code = code/samskivert-1.0.jar
 code = code/scalaj-collection_2.8.0-1.0.jar
 code = code/servlet-api-2.5-20081211.jar
 code = code/squeryl_2.8.0-0.9.4-RC1.jar
+
+# Reader code (not in our main classpath)
+resource = code/coreen-java-reader.jar
 
 # Non-code resources
 resource = background.png

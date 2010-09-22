@@ -1,6 +1,6 @@
-getdown.txt = 6e6fb5f6e9ce37bfd93a4ee5cb9a6532
-code/coreen.jar = e7c2e9f15d018f19bd7515ab4e83417a
-code/coreen-gwt.jar = f339470e29eb94af5f7012c8a40f0ed0
+getdown.txt = ecf605a13608f502d7306c3686650b0a
+code/coreen.jar = fa403171d96ade2443a84207d54c057b
+code/coreen-gwt.jar = e7a0ec20e4dae61831bea30b4346590c
 code/getdown.jar = 1f4ce4899362e81a434bb8d3fc29f1a9
 code/scala-library.jar = 282b33aac185264e1ef207a37eda605b
 code/cglib-nodep-2.2.jar = 8187f0c5cc2aa8125079350407143b8b
@@ -12,5 +12,6 @@ code/samskivert-1.0.jar = 5be9f803ac1ea74444e76836741f9a5d
 code/scalaj-collection_2.8.0-1.0.jar = 3d15232e787accc8312c1abda0ef3f7a
 code/servlet-api-2.5-20081211.jar = c0da66fd2c78ab41500e7246bfea7303
 code/squeryl_2.8.0-0.9.4-RC1.jar = 2b03cae3f11cff88b77d3b418513883a
+code/coreen-java-reader.jar = 6db75bf44c13741d902ba8c83954ffc2
 background.png = a7c26fed571291d16cd999bbbf0c0c1c
-digest.txt = 518ae843edabe03c4daa92ca17ab245e
+digest.txt = e7aeacae6ab54875f9a3315db77969ed
