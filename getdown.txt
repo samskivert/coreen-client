@@ -1,0 +1,43 @@
+#
+# Getdown control file for Coreen client
+
+# version = currently using timestamp versioning
+# appbase = http://github.com/samskivert/coreen-client/raw/master/
+appbase = file:///home/mdb/projects/coreen/client
+
+# Configure the update UI
+ui.name = Coreen
+ui.background_image = background.png
+ui.progress = 17, 321, 458, 22
+ui.progress_bar = FFFFFF
+ui.progress_text = FFFFFF
+ui.status = 57, 245, 373, 68
+ui.status_text = 000000
+
+# Patched code resources
+code = code/coreen.jar
+code = code/coreen-gwt.jar
+code = code/getdown.jar
+
+# Non-patched code resources (some day maybe we'll download these directly
+# from Maven Central)
+code = code/scala-library.jar
+code = code/cglib-nodep-2.2.jar
+code = code/gwt-servlet-2.0.4.jar
+code = code/h2-1.2.142.jar
+code = code/jetty-6.1.25.jar
+code = code/jetty-util-6.1.25.jar
+code = code/samskivert-1.0.jar
+code = code/scalaj-collection_2.8.0-1.0.jar
+code = code/servlet-api-2.5-20081211.jar
+code = code/squeryl_2.8.0-0.9.4-RC1.jar
+
+# Non-code resources
+resource = background.png
+
+# Parameters passed to the JVM
+# jvmarg = -Xmx512M
+jvmarg = -Dappdir=%APPDIR%
+
+# The main entry point
+class = coreen.server.Main
