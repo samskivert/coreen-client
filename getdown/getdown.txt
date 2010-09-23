@@ -2,7 +2,7 @@
 # Getdown control file for Coreen client
 
 # version = currently using timestamp versioning
-appbase = http://github.com/samskivert/coreen-client/raw/master/
+appbase = http://github.com/samskivert/coreen-client/raw/master/getdown/
 
 # Configure the update UI
 ui.name = Coreen
