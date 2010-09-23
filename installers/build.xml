@@ -1,0 +1,59 @@
+<!-- project build configuration -->
+<project name="Coreen Installers" default="client" basedir=".">
+
+  <property name="root_url" value="http://github.com/samskivert/coreen-client/raw/master"/>
+
+  <!-- builds the Windows NSIS-based installer -->
+  <target name="windows">
+    <copy tofile="windows/coreen-installer.nsi" overwrite="true" encoding="UTF-8"
+          file="windows/coreen-installer.nsi.in">
+      <filterset>
+        <filter token="root_url" value="${root_url}"/>
+      </filterset>
+    </copy>
+
+    <exec dir="windows" executable="makensis" failonerror="true">
+      <arg line="-V2"/>
+      <arg line="coreen-installer.nsi"/>
+    </exec>
+
+    <delete file="windows/coreen-installer.nsi.in"/>
+  </target>
+
+  <!-- builds and installs the production installers -->
+  <target name="client">
+    <!-- windows installer -->
+    <antcall target="windows"/>
+    <!-- mac installer -->
+    <ant target="client" dir="mac" inheritAll="no"/>
+    <!-- linux installer -->
+    <ant target="client" dir="linux" inheritAll="no"/>
+    <copy todir="${install.dir}/client/">
+      <fileset dir="${deploy.dir}" includes="bang-install.exe"/>
+      <fileset dir="${deploy.dir}" includes="bang-install.bin"/>
+      <fileset dir="mac/${deploy.dir}" includes="bang-install.dmg"/>
+    </copy>
+  </target>
+
+  <!-- builds and installs the development installers -->
+  <target name="devclient">
+    <!-- windows installer -->
+    <antcall target="windows"/>
+    <!-- mac installer -->
+    <ant target="devclient" dir="mac" inheritAll="no"/>
+    <!-- linux installer -->
+    <ant target="client" dir="linux" inheritAll="no"/>
+    <copy todir="${install.dir}/client/">
+      <fileset dir="${deploy.dir}" includes="bang-install.exe"/>
+      <fileset dir="${deploy.dir}" includes="bang-install.bin"/>
+      <fileset dir="mac/${deploy.dir}" includes="bang-install.dmg"/>
+    </copy>
+  </target>
+
+  <!-- clean out the project -->
+  <target name="clean">
+    <ant target="clean" dir="mac" inheritAll="no"/>
+    <delete file="data/getdown-pro.jar"/>
+    <delete dir="${deploy.dir}"/>
+  </target>
+</project>
