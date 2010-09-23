@@ -3,57 +3,81 @@
 
   <property name="root_url" value="http://github.com/samskivert/coreen-client/raw/master"/>
 
-  <!-- builds the Windows NSIS-based installer -->
-  <target name="windows">
+  <target name="windows" description="Builds Windows installer.">
     <copy tofile="windows/coreen-installer.nsi" overwrite="true" encoding="UTF-8"
           file="windows/coreen-installer.nsi.in">
       <filterset>
         <filter token="root_url" value="${root_url}"/>
       </filterset>
     </copy>
-
     <exec dir="windows" executable="makensis" failonerror="true">
       <arg line="-V2"/>
       <arg line="coreen-installer.nsi"/>
     </exec>
-
-    <delete file="windows/coreen-installer.nsi.in"/>
+    <delete file="windows/coreen-installer.nsi"/>
   </target>
 
-  <!-- builds and installs the production installers -->
-  <target name="client">
-    <!-- windows installer -->
-    <antcall target="windows"/>
-    <!-- mac installer -->
-    <ant target="client" dir="mac" inheritAll="no"/>
-    <!-- linux installer -->
-    <ant target="client" dir="linux" inheritAll="no"/>
-    <copy todir="${install.dir}/client/">
-      <fileset dir="${deploy.dir}" includes="bang-install.exe"/>
-      <fileset dir="${deploy.dir}" includes="bang-install.bin"/>
-      <fileset dir="mac/${deploy.dir}" includes="bang-install.dmg"/>
-    </copy>
-  </target>
+  <target name="mac" description="Builds Mac OS installer image.">
+    <property name="base.name" value="Coreen"/>
+    <property name="app.name" value="${base.name}.app"/>
+    <property name="jdir" value="Contents/Resources/Java"/>
+    <property name="img.dir" value="mac-image"/>
 
-  <!-- builds and installs the development installers -->
-  <target name="devclient">
-    <!-- windows installer -->
-    <antcall target="windows"/>
-    <!-- mac installer -->
-    <ant target="devclient" dir="mac" inheritAll="no"/>
-    <!-- linux installer -->
-    <ant target="client" dir="linux" inheritAll="no"/>
-    <copy todir="${install.dir}/client/">
-      <fileset dir="${deploy.dir}" includes="bang-install.exe"/>
-      <fileset dir="${deploy.dir}" includes="bang-install.bin"/>
-      <fileset dir="mac/${deploy.dir}" includes="bang-install.dmg"/>
-    </copy>
-  </target>
+    <!-- be sure the app base directory is empty -->
+    <delete dir="${img.dir}"/>
+    <mkdir dir="${img.dir}"/>
 
-  <!-- clean out the project -->
-  <target name="clean">
-    <ant target="clean" dir="mac" inheritAll="no"/>
-    <delete file="data/getdown-pro.jar"/>
-    <delete dir="${deploy.dir}"/>
-  </target>
+    <!-- prepare the application directory -->
+    <taskdef name="jarbundler" classpath="lib/jarbundler-1.2.jar"
+      classname="com.loomcom.ant.tasks.jarbundler.JarBundler"/>
+    <jarbundler dir="${img.dir}" name="${base.name}" 
+      mainclass="com.threerings.getdown.launcher.Getdown" 
+      workingdirectory="$APP_PACKAGE/Contents/Resources/Java"
+      jars="../getdown/code/getdown.jar"
+      vmoptions="-Dappdir=."
+      version="1.0"
+      jvmversion="1.6+"
+      infostring="${base.name} Installer"
+      icon="mac/desktop.icns"
+      stubfile="mac/JavaApplicationStub"/>
+    <copy todir="${img.dir}/${app.name}/${jdir}/" file="../getdown/background.png"/>
+    <echo file="${img.dir}/${app.name}/${jdir}/getdown.txt"
+          message="appbase = ${root_url}/getdown/${line.separator}"/>
+
+    <!-- prepare the disk image -->
+    <copy file="mac/client_DS_Store" tofile="${img.dir}/.DS_Store"/>
+    <mkdir dir="${img.dir}/.background"/>
+    <copy todir="${img.dir}/.background/" file="mac/banner.png"/>
+
+    <!-- fix permissions, no matter how silly the umask made them -->
+    <exec executable="/bin/chmod">
+      <arg line="-R"/>
+      <arg line="u+w,go-w,a+r"/>
+      <arg line="'${img.dir}'"/>
+    </exec>
+    <exec executable="/bin/chmod">
+      <arg line="a+x"/>
+      <arg line="'${img.dir}/${app.name}/Contents/MacOS/JavaApplicationStub'"/>
+    </exec>
+
+    <!-- finally create the disk image -->
+    <exec executable="mkisofs" failonerror="true">
+      <arg line="-quiet"/>
+      <arg line="-hide-rr-moved"/>
+      <arg line="-hide-joliet"/>
+      <arg line=".rr_moved"/>
+      <arg line="-uid"/>
+      <arg line="0"/>
+      <arg line="-gid"/>
+      <arg line="0"/>
+      <arg line="-J"/>
+      <arg line="-V"/>
+      <arg line="'${base.name}'"/>
+      <arg line="-o"/>
+      <arg line="'coreen-install.dmg'"/>
+      <arg file="${img.dir}"/>
+    </exec>
+
+    <delete dir="${img.dir}"/>
+  </target> 
 </project>
