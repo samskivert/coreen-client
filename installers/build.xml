@@ -1,7 +1,9 @@
 <!-- project build configuration -->
 <project name="Coreen Installers" default="client" basedir=".">
-
+  <!-- the root URL from which the client is downloaded (minus getdown subdir) -->
   <property name="root_url" value="http://github.com/samskivert/coreen-client/raw/master"/>
+  <!-- for now we build only English language installers -->
+  <property name="default_locale" value="en"/>
 
   <target name="windows" description="Builds Windows installer.">
     <copy tofile="windows/coreen-installer.nsi" overwrite="true" encoding="UTF-8"
@@ -80,4 +82,44 @@
 
     <delete dir="${img.dir}"/>
   </target> 
+
+  <target name="linux" description="Creates the Linux installer.">
+    <property name="temp.dir" value="linux-image"/>
+    <mkdir dir="${temp.dir}"/>
+
+    <copy todir="${temp.dir}">
+      <fileset dir="../getdown/code" includes="getdown.jar"/>
+      <fileset dir="../getdown" includes="background.png"/>
+      <fileset dir="linux" includes="coreen"/>
+      <fileset dir="linux" includes="desktop.png"/>
+    </copy>
+
+    <echo file="${temp.dir}/getdown.txt" message="appbase=${root_url}/getdown/${line.separator}"/>
+
+    <copy todir="${temp.dir}" overwrite="true" encoding="UTF-8">
+      <fileset dir="linux" includes="finish_install.sh"/>
+      <filterset>
+        <filter token="client_ident" value="${client_ident}"/>
+        <filter token="client_title" value="${client_title}"/>
+        <filter token="editor_title" value="${editor_title}"/>
+      </filterset>
+    </copy>
+
+    <exec executable="chmod" failonerror="true">
+      <arg line="a+rx"/>
+      <arg line="${temp.dir}/finish_install.sh"/>
+      <arg line="${temp.dir}/coreen"/>
+    </exec>
+
+    <exec executable="makeself" failonerror="true" outputproperty="make.output">
+      <arg line="${temp.dir}"/>
+      <arg line="coreen-install.bin"/>
+      <arg line="coreen"/>
+      <arg line="./finish_install.sh"/>
+      <arg line="$0"/>
+    </exec>
+    <echo level="info">${make.output}</echo>
+
+    <delete dir="${temp.dir}"/>
+  </target>
 </project>
