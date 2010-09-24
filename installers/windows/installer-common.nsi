@@ -181,7 +181,7 @@ Section "Install" InstStuff
   SetOutPath $INSTDIR
   File "${DATADIR}\code\getdown.jar"
   File "jRegistryKey.dll"
-  File "${RSRCDIR}\background.png"
+  File "${DATADIR}\background.png"
   File "${RSRCDIR}\app_icon.ico"
 
   ; Create our bootstrap getdown.txt file

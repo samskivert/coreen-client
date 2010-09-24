@@ -47,9 +47,15 @@
           message="appbase = ${root_url}/getdown/${line.separator}"/>
 
     <!-- prepare the disk image -->
-    <copy file="mac/client_DS_Store" tofile="${img.dir}/.DS_Store"/>
+    <copy file="mac/dot_DS_Store" tofile="${img.dir}/.DS_Store"/>
+    <copy file="mac/dot_VolumeIcon.icns" tofile="${img.dir}/.VolumeIcon.icns"/>
     <mkdir dir="${img.dir}/.background"/>
-    <copy todir="${img.dir}/.background/" file="mac/banner.png"/>
+    <copy todir="${img.dir}/.background/" file="mac/backgroundImage.jpg"/>
+    <exec executable="/bin/ln" dir="${img.dir}">
+      <arg line="-s"/>
+      <arg line="/Applications"/>
+      <arg line="Applications"/>
+    </exec>
 
     <!-- fix permissions, no matter how silly the umask made them -->
     <exec executable="/bin/chmod">
