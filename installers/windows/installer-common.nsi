@@ -24,7 +24,6 @@
   !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${RSRCDIR}\branding.bmp"
 
   !include "MUI.nsh"
-;  !include "ZipDLL.nsh"
 
 
 ;--------------------------------
@@ -56,9 +55,8 @@
 ;--------------------------------
 ;Data
 
-  !define REQUIRED_JREVERSION "1.6.0"
-  !define JREVERSION "1.6.0"
-;  !define JREZIP "java.zip"
+  !define REQUIRED_JDKVERSION "1.6"
+  !define JDKVERSION "1.6"
 
   AutoCloseWindow true  ; close the window when the install is done
   ShowInstDetails nevershow  ;hide  ;show
@@ -106,75 +104,37 @@ FunctionEnd
 
 ;-------------------------------------------------------------
 Section "Install" InstStuff
-  ; add in the size the JRE once it is unpacked
-  AddSize 100000
+  Var /GLOBAL JdkVers ; only global variables are supported, yay
+  Var /GLOBAL JdkHome
 
   ; create our installation directory
   ClearErrors
   CreateDirectory "$INSTDIR"
-  IfErrors 0 CheckForJRE
+  IfErrors 0 CheckForJDK
      MessageBox MB_OK|MB_ICONSTOP "$(no_create_instdir)"
      Quit
 
-  ; check for the necessary JRE
-  CheckForJRE:
+  ; check for the necessary JDK
+  CheckForJDK:
   ClearErrors
-  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Web Start" "CurrentVersion"
-  IfErrors NeedsRequiredJRE
-  Push ${REQUIRED_JREVERSION}
-  Push $R0
+  ReadRegStr $JdkVers HKLM "SOFTWARE\JavaSoft\Java Development Kit" "CurrentVersion"
+  IfErrors NeedsRequiredJDK
+  Push ${REQUIRED_JDKVERSION}
+  Push $JdkVers
   Call CompareVersions
   Pop $R0
-  IntCmp $R0 1 LocateJRE NeedsRequiredJRE
+  IntCmp $R0 1 LocateJDK NeedsRequiredJDK
 
-  LocateJRE:
-  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" \
-    "CurrentVersion"
-  StrCmp $R0 "" NeedsRequiredJRE
-  ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R0" \
-    "JavaHome"
-  StrCmp $R0 "" NeedsRequiredJRE
-  IfFileExists "$R0\bin\java.exe" 0 NeedsRequiredJRE
-    StrCpy $R8 $R0
-    Goto HasRequiredJRE
+  LocateJDK:
+  ReadRegStr $JdkHome HKLM "SOFTWARE\JavaSoft\Java Development Kit\$JdkVers" "JavaHome"
+  StrCmp $JdkHome "" NeedsRequiredJDK
+  IfFileExists "$JdkHome\bin\javaw.exe" 0 NeedsRequiredJDK
+    Goto HasRequiredJDK
 
-  NeedsRequiredJRE:
+  NeedsRequiredJDK:
 ; TODO: tell them to install Java
-;
-;  ; (maybe download and) install the JRE
-;  SetOutPath $TEMP
-;!ifdef BUNDLE_JVM
-;  File "${DATADIR}\${JREZIP}"
-;!endif
 
-;!ifndef BUNDLE_JVM
-;  !insertmacro MUI_HEADER_TEXT "$(dl_header)" "$(dl_subheader)"
-;  NSISdl::download "${HOST}/jre/${JREZIP}" "$TEMP\${JREZIP}"
-;  Pop $R0 ;Get the return value
-;  StrCmp $R0 "success" ContinueWithJREInstall
-;    StrCmp $R0 "cancel" AbandonShip
-;      MessageBox MB_YESNO|MB_ICONQUESTION \
-;        "$(download_fail_pre)$\r$\r$R0$\r$\r$(download_fail_post)" \
-;        IDNO AbandonShip
-;      ExecShell open "${HOST}/jre/download_failed.html"
-;    AbandonShip:
-;    Quit
-;  ContinueWithJREInstall:
-;!endif
-
-;  ClearErrors
-;  ZipDLL::extractall "$TEMP\${JREZIP}" "$INSTDIR"
-;  Pop $R0 ;Get the return value
-;  StrCmp $R0 "success" NoteInstalledJRE
-;    ExecShell open "${HOST}/jre/download_failed.html"
-;    MessageBox MB_OK|MB_ICONSTOP "$(jre_error)"
-;    Quit
-
-;  NoteInstalledJRE:
-;  StrCpy $R8 "$INSTDIR\java"
-
-  HasRequiredJRE:
-;  Delete $TEMP\${JREZIP}
+  HasRequiredJDK:
   ClearErrors
 
   ; Install Getdown and the configuration
@@ -191,7 +151,7 @@ Section "Install" InstStuff
 
   ; Create our main launcher "shortcut"
   CreateShortCut "$INSTDIR\$(shortcut_name).lnk" \
-                 "$R8\bin\javaw.exe" "-jar getdown.jar ." \
+                 "$JdkHome\bin\javaw.exe" "-jar getdown.jar ." \
                  "$INSTDIR\app_icon.ico" "" "" "" "$(shortcut_hint)"
 
   ; Write the uninstaller
@@ -204,10 +164,8 @@ Section "Install" InstStuff
                  "$INSTDIR\$(shortcut_name).lnk"
 
   ; Set up registry stuff
-  WriteRegStr HKCU "SOFTWARE\${NAME}" \
-                   INSTALL_DIR_REG_KEY $INSTDIR
-  WriteRegStr HKCU "SOFTWARE\${NAME}" \
-                   PRODUCT_VERSION_REG_KEY ${INSTALLER_VERSION}
+  WriteRegStr HKCU "SOFTWARE\${NAME}" INSTALL_DIR_REG_KEY $INSTDIR
+  WriteRegStr HKCU "SOFTWARE\${NAME}" PRODUCT_VERSION_REG_KEY ${INSTALLER_VERSION}
 
   StrCpy $R0 "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\${NAME}"
   WriteRegStr HKCU $R0 "DisplayName" "${NAME}"
