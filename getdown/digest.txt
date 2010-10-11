@@ -1,7 +1,7 @@
 getdown.txt = 7f04483185ad9d522e85764e2f70f931
-code/coreen.jar = 6ee6880dabf34bedac1165fe1dca721b
-code/coreen-gwt.jar = 72c2454058dd62373648853f68a64c72
+code/coreen.jar = 652950266022f819e1ec3a31f03147c5
+code/coreen-gwt.jar = 6e677becf535a8d8c0eedc40b88e510c
 code/getdown.jar = 875b3db2f5546883f8be8b1fe5d5e991
-code/coreen-java-reader.jar = a3359df12aeff14d1026929e48e4a371
+code/coreen-java-reader.jar = c879ef680e2d73d5ce919a5d59bd87e5
 background.png = 8f44b9208910d763dbd048442b6072e1
-digest.txt = c4d69e116fc5128371d0c19dc4e71f5b
+digest.txt = 444dc0a318cc41e9db2ecc6109ee948f
